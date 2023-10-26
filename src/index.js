@@ -39,6 +39,31 @@
     Якщо запит був успішний, під селектом у блоці div.cat-info з'являється зображення і 
     розгорнута інформація про кота: назва породи, опис і темперамент.
 
+    Опрацювання стану завантаження
+    Поки відбувається будь-який HTTP-запит, необхідно показувати завантажувач - елемент
+     p.loader. Поки запитів немає або коли запит завершився, завантажувач необхідно 
+     приховувати. Використовуй для цього додаткові CSS класи.
+
+    Поки виконується запит за списком порід, необхідно приховати select.breed-select 
+    та показати p.loader.
+
+    Поки виконується запит за інформацією про кота, необхідно приховати div.cat-info 
+    та показати p.loader.
+
+    Як тільки будь-який запит завершився, p.loader треба приховати.
+
+
+    Опрацювання помилки
+    Якщо у користувача сталася помилка під час будь-якого HTTP-запиту, наприклад, 
+    впала мережа, була втрата пакетів тощо, тобто проміс було відхилено, необхідно відобразити 
+    елемент p.error, а при кожному наступному запиті приховувати його. Використовуй для цього 
+    додаткові CSS класи.
+
+    Протестувати працездатність відображення помилки дуже просто - зміни адресу запиту додавши 
+    в кінець будь-який символ, наприклад замість https://api.thecatapi.com/v1/breeds використай 
+    https://api.thecatapi.com/v1/breeds123. Запит отримання списку порід буде відхилено з помилкою. 
+    Аналогічно для запиту інформації про кота за породою.
+
 */
 
 import { fetchBreeds, fetchCatByBreed } from "./cat-api";
@@ -76,7 +101,6 @@ function showError() {
     infoCat.classList.add('hidden');
 }
 
-
 fetchBreeds()
 .then(breeds => {
     breeds.forEach(breed => {
@@ -92,7 +116,6 @@ fetchBreeds()
     showError();
 });
 
-
 breedSelect.addEventListener('change', () => {
     const selectedBreedID = breedSelect.value;
 
@@ -107,10 +130,7 @@ breedSelect.addEventListener('change', () => {
                             <p>${cat.description}</p>
                             <p><strong>Temperament:</strong> ${cat.temperament}</p>
                             <img src="${cat.url}" alt="${cat.name}">`;
-                            loader.classList.add('hidden');
-                            error.classList.add('hidden');
-                } else {
-                    showError();
+                            hideLoaderForCatInfo();
                 }
             })
             .catch(error => {
