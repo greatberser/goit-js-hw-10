@@ -15,5 +15,5 @@ export function fetchCatByBreed(breedId){
             throw new Error('Failed to fetch cat information');
         }
         return response.json();
-    })
+    });
 }

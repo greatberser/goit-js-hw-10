@@ -51,12 +51,6 @@ const infoCat = document.querySelector('.cat-info');
 const loader = document.querySelector('.loader');
 const error = document.querySelector('.error');
 
-function showLoaderForBreeds() {
-    loader.classList.remove('hidden');
-    breedSelect.classList.add('hidden');
-    error.classList.add('hidden');
-}
-
 function hideLoaderForBreeds() {
     loader.classList.add('hidden');
     breedSelect.classList.remove('hidden');
@@ -90,7 +84,12 @@ fetchBreeds()
         option.textContent = breed.name;
         breedSelect.appendChild(option);
     });
+    hideLoaderForBreeds();
 })
+.catch(error => {
+    console.error(error);
+    showError();
+});
 
 
 breedSelect.addEventListener('change', () => {
@@ -98,7 +97,6 @@ breedSelect.addEventListener('change', () => {
 
     if (selectedBreedID) {
         showLoaderForCatInfo();
-        hideLoaderForBreeds();
         fetchCatByBreed(selectedBreedID)
             .then(response => {
                 if (response.length > 0) {
@@ -108,7 +106,8 @@ breedSelect.addEventListener('change', () => {
                             <p>${cat.description}</p>
                             <p><strong>Temperament:</strong> ${cat.temperament}</p>
                             <img src="${cat.url}" alt="${cat.name}">`;
-                        hideLoaderForCatInfo();
+                            loader.classList.add('hidden');
+                            error.classList.add('hidden');
                 } else {
                     showError();
                 }
