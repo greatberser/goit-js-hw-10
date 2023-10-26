@@ -76,6 +76,7 @@ function showError() {
     infoCat.classList.add('hidden');
 }
 
+
 fetchBreeds()
 .then(breeds => {
     breeds.forEach(breed => {
