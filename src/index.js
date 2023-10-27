@@ -103,7 +103,7 @@ Notiflix.Notify.success('Choose your cat', {
     
 function onSelectBreed(event) {
   loader.innerHTML = '';
-  loader.classList.replace('is-hidden', 'loader');
+  loader.classList.replace('hidden', 'loader');
   selector.classList.add('hidden');
   divCatInfo.classList.add('hidden');
 
