@@ -69,73 +69,67 @@
 import { fetchBreeds, fetchCatByBreed } from "./cat-api";
 import axios from "axios";
 
-axios.defaults.headers.common["x-api-key"] = "live_bgrepK98pfyDEX3j7ghYG8MDyfYms2XcDU96QItIHIdQBAZU65VP32rnk7PVNFur";
+axios.defaults.headers.common["x-api-key"] = "live_rViMZxOEC0DEWK9wByBIBCFBmjInraXvv5eNlHycWAkcHOPcjmhcNaI0aFVHjf2K";
 
-const breedSelect = document.querySelector('.breed-select');
-const infoCat = document.querySelector('.cat-info');
-const loader = document.querySelector('.loader');
-const error = document.querySelector('.error');
+const refs = {
+    selector: document.querySelector('.breed-select'),
+    divCatInfo: document.querySelector('.cat-info'),
+    loader: document.querySelector('.loader'),
+    error: document.querySelector('.error'),
+};
 
-function hideLoaderForBreeds() {
-    loader.classList.add('hidden');
-    breedSelect.classList.remove('hidden');
-    error.classList.add('hidden');
-}
+const { selector, divCatInfo, loader, error } = refs;
 
-function showLoaderForCatInfo() {
-    loader.classList.remove('hidden');
-    infoCat.classList.add('hidden');
-    error.classList.add('hidden');
-}
-  
-function hideLoaderForCatInfo() {
-    loader.classList.add('hidden');
-    infoCat.classList.remove('hidden');
-    error.classList.add('hidden');
-}
-
-function showError() {
-    error.classList.remove('hidden');
-    loader.classList.add('hidden');
-    breedSelect.classList.add('hidden');
-    infoCat.classList.add('hidden');
-}
+loader.classList.replace('loader', 'hidden');
+error.classList.add('hidden');
+divCatInfo.classList.add('hidden');
+selector.classList.replace('breed-select', 'hidden');
 
 fetchBreeds()
-.then(breeds => {
-    breeds.forEach(breed => {
-        const option = document.createElement('option');
-        option.value = breed.id;
-        option.textContent = breed.name;
-        breedSelect.appendChild(option);
-    });
-    hideLoaderForBreeds();
+  .then(data => {
+    const markup = data.map(({id,name}) => `<option value="${id}">${name}</option>`)
+   .join();
+    selector.innerHTML = markup;
+    
+    selector.classList.replace('hidden', 'breed-select');
 })
-.catch(error => {
-    console.error(error);
-    showError();
-});
+  .catch(onFetchError);    
 
-breedSelect.addEventListener('change', () => {
-    const selectedBreedID = breedSelect.value;
+selector.addEventListener('change', onSelectBreed);
 
-    if (selectedBreedID) {
-        showLoaderForCatInfo();
-        fetchCatByBreed(selectedBreedID)
-            .then(response => {
-                if (response.length > 0) {
-                    const cat = response[0];
-                        infoCat.innerHTML = `
-                            <h2>${cat.name}</h2>
-                            <p>${cat.description}</p>
-                            <p><strong>Temperament:</strong> ${cat.temperament}</p>
-                            <img src="${cat.url}" alt="${cat.name}">`;
-                            hideLoaderForCatInfo();
-                }
-            })
-            .catch(error => {
-                console.error(error);
-                showError();
-            });
-    }
+Notiflix.Notify.success('Choose your cat', {
+  position: 'center-center'
 });
+    
+function onSelectBreed(event) {
+  loader.innerHTML = '';
+  loader.classList.replace('is-hidden', 'loader');
+  selector.classList.add('hidden');
+  divCatInfo.classList.add('hidden');
+
+  const breedId = event.currentTarget.value;
+  fetchCatByBreed(breedId)
+  .then(data => {
+  loader.classList.replace('loader', 'hidden');
+  selector.classList.remove('hidden');
+  const { url, breeds } = data[0];
+        
+  divCatInfo.innerHTML = `
+    <div class="description">
+    <h1>${breeds[0].name}</h1>
+    <p>${breeds[0].description}</p>
+    <p><b>Temperament:</b> ${breeds[0].temperament}</p>
+    </div>
+    <img src="${url}" alt="${breeds[0].name}" width="400"/>`
+    divCatInfo.classList.remove('hidden');
+    })
+  .catch(onFetchError);
+};
+
+function onFetchError(error) {
+  selector.classList.remove('hidden');
+  loader.classList.replace('loader', 'hidden');
+
+  Notiflix.Notify.failure('Oops! Something went wrong! Try reloading the page!', {
+    position: 'center-center'});
+};
