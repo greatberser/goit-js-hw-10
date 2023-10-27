@@ -96,10 +96,6 @@ fetchBreeds()
   .catch(onFetchError);    
 
 selector.addEventListener('change', onSelectBreed);
-
-Notiflix.Notify.success('Choose your cat', {
-  position: 'center-center'
-});
     
 function onSelectBreed(event) {
   loader.innerHTML = '';
@@ -129,7 +125,4 @@ function onSelectBreed(event) {
 function onFetchError(error) {
   selector.classList.remove('hidden');
   loader.classList.replace('loader', 'hidden');
-
-  Notiflix.Notify.failure('Oops! Something went wrong! Try reloading the page!', {
-    position: 'center-center'});
 };
